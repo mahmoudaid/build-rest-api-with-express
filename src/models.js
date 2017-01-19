@@ -90,7 +90,10 @@ var ReviewSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  postedOn: Date,
+  postedOn: {
+    type: Date,
+    default: Date.now
+  },
   rating: {
     type: Number,
     required: [true, 'A rating is required.'],
@@ -145,6 +148,15 @@ var CourseSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Review'
   }]
+});
+
+// Pre-save, create step numbers
+CourseSchema.pre('save', function(next) {
+  var course = this;
+  for (var i = 0; i<course.steps.length; i++) {
+    course.steps[i].stepNumber = i + 1;
+  }
+  next();
 });
 
 // Create virtual overallRating field in courses.
